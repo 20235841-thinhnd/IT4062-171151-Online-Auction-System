@@ -1,0 +1,37 @@
+name: C Build, Unit Test & Coverage CI
+
+on:
+  push:
+    branches: [ main, dev, 'feat/**' ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build-and-test:
+    name: Build & Run Unit Tests (Ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout mã nguồn
+        uses: actions/checkout@v4
+
+      - name: 2. Cài đặt công cụ biên dịch và đo Coverage (gcc, make, lcov)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential lcov
+
+      - name: 3. Biên dịch Server và Client CLI
+        run: |
+          make all
+
+      - name: 4. Chạy Unit Test và Xuất báo cáo Coverage
+        run: |
+          make coverage
+
+      - name: 5. Lưu trữ báo cáo Coverage HTML (Artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-html
+          path: coverage/html
+          if-no-files-found: ignore

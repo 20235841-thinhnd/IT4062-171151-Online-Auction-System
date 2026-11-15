@@ -49,18 +49,23 @@ test: dirs
 	fi
 
 # Xuất báo cáo độ phủ mã nguồn (Coverage > 90%) bằng gcov và lcov
+# Xuất báo cáo độ phủ mã nguồn (Coverage > 90%) bằng gcov và lcov
 coverage: test
-	@mkdir -p $(COV_DIR)
-	gcov -o $(BIN_DIR) $(CORE_SRCS)
-	@mv -f *.gcov $(COV_DIR)/ 2>/dev/null || true
-	@if command -v lcov >/dev/null 2>&1; then \
-		lcov --capture --directory $(BIN_DIR) --output-file $(COV_DIR)/coverage.info; \
-		lcov --remove $(COV_DIR)/coverage.info '/usr/*' '*/tests/*' --output-file $(COV_DIR)/coverage.info; \
-		lcov --list $(COV_DIR)/coverage.info; \
-		genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html; \
-		echo "Báo cáo HTML đã được xuất tại: $(COV_DIR)/html/index.html"; \
+	@if [ -z "$(wildcard $(TEST_DIR)/*.c)" ] || [ -z "$(CORE_SRCS)" ]; then \
+		echo "Bỏ qua coverage vì chưa có file test hoặc file module lõi."; \
 	else \
-		echo "Đã chạy gcov xong. Cài thêm 'sudo apt install lcov' để xem báo cáo HTML trực quan."; \
+		mkdir -p $(COV_DIR); \
+		gcov -o $(BIN_DIR) $(CORE_SRCS); \
+		mv -f *.gcov $(COV_DIR)/ 2>/dev/null || true; \
+		if command -v lcov >/dev/null 2>&1; then \
+			lcov --capture --directory $(BIN_DIR) --output-file $(COV_DIR)/coverage.info; \
+			lcov --remove $(COV_DIR)/coverage.info '/usr/*' '*/tests/*' --output-file $(COV_DIR)/coverage.info; \
+			lcov --list $(COV_DIR)/coverage.info; \
+			genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html; \
+			echo "Báo cáo HTML đã được xuất tại: $(COV_DIR)/html/index.html"; \
+		else \
+			echo "Đã chạy gcov xong. Cài thêm 'sudo apt install lcov' để xem báo cáo HTML trực quan."; \
+		fi; \
 	fi
 
 # Dọn dẹp toàn bộ file biên dịch và file coverage tạm
