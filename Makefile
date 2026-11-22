@@ -14,7 +14,7 @@ COV_DIR = coverage
 
 # Tự động quét danh sách file nguồn (.c)
 SERVER_SRCS = $(wildcard $(SERVER_DIR)/*.c)
-CLIENT_SRCS = $(wildcard $(CLIENT_DIR)/*.c)
+CLIENT_SRCS = $(wildcard $(CLIENT_DIR)/*.c) $(SERVER_DIR)/stream_buffer.c
 # Lọc bỏ main.c của server khi biên dịch Unit Test để tránh trùng hàm main()
 CORE_SRCS = $(filter-out $(SERVER_DIR)/main.c, $(SERVER_SRCS))
 TEST_SRCS = $(wildcard $(TEST_DIR)/*.c) $(wildcard $(TEST_DIR)/unity/*.c)
