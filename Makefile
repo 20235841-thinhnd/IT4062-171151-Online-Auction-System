@@ -49,13 +49,12 @@ test: dirs
 	fi
 
 # Xuất báo cáo độ phủ mã nguồn (Coverage > 90%) bằng gcov và lcov
-# Xuất báo cáo độ phủ mã nguồn (Coverage > 90%) bằng gcov và lcov
 coverage: test
-	@if [ -z "$(wildcard $(TEST_DIR)/*.c)" ] || [ -z "$(CORE_SRCS)" ]; then \
+	@if ! ls $(TEST_DIR)/*.c >/dev/null 2>&1 || [ -z "$(CORE_SRCS)" ]; then \
 		echo "Bỏ qua coverage vì chưa có file test hoặc file module lõi."; \
 	else \
 		mkdir -p $(COV_DIR); \
-		gcov -o $(BIN_DIR) $(CORE_SRCS); \
+		gcov -o $(TEST_BIN) $(CORE_SRCS); \
 		mv -f *.gcov $(COV_DIR)/ 2>/dev/null || true; \
 		if command -v lcov >/dev/null 2>&1; then \
 			lcov --capture --directory $(BIN_DIR) --output-file $(COV_DIR)/coverage.info; \
@@ -64,7 +63,7 @@ coverage: test
 			genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html; \
 			echo "Báo cáo HTML đã được xuất tại: $(COV_DIR)/html/index.html"; \
 		else \
-			echo "Đã chạy gcov xong. Cài thêm 'sudo apt install lcov' để xem báo cáo HTML trực quan."; \
+			echo "Đã chạy gcov xong. Cài thêm 'lcov' nếu muốn xem báo cáo HTML."; \
 		fi; \
 	fi
 
